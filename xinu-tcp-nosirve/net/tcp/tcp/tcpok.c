@@ -1,0 +1,1 @@
+// checking segment validity
