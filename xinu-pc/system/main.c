@@ -13,7 +13,7 @@ process	main(void)
 
     netstart();
 
-	nsaddr = 0x800a0c10;
+	//nsaddr = 0x800a0c10; variable por ahora sin uso
 
 	tcp_init();
 
