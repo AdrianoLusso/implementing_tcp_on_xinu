@@ -75,3 +75,5 @@ extern	shellcmd  xsh_uptime	(int32, char *[]);
 
 /* in file xsh_help.c */
 extern	shellcmd  xsh_help	(int32, char *[]);
+
+extern	shellcmd  tcpclient	(int32, char *[]);

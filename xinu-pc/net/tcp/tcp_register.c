@@ -83,6 +83,7 @@ int32	tcp_register (
 		/* Obtain local IP address from interface */
 
 		lip = NetData.ipucast;
+		kprintf("local ip: %u.%u.%u.%u\n",((lip >> 24) & 0xFF),((lip >> 16) & 0xFF),((lip >> 8) & 0xFF),((lip) & 0xFF));
 
 		/* Allocate receive buffer and initialize ptrs */
 

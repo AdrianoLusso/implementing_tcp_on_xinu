@@ -21,6 +21,7 @@ syscall	read(
 		restore(mask);
 		return SYSERR;
 	}
+
 	devptr = (struct dentry *) &devtab[descrp];
 	retval = (*devptr->dvread) (devptr, buffer, count);
 	restore(mask);

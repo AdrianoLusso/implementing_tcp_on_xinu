@@ -11,11 +11,7 @@ extern print_text_on_vga(unsigned int x, unsigned int y, const char * t);
 process	main(void)
 {
 
-    netstart();
 
-	//nsaddr = 0x800a0c10; variable por ahora sin uso
-
-	tcp_init();
 
 	paint_screen();
 	print_text_on_vga(10, 200, "Xinu OS for PC with VGA support");
@@ -26,12 +22,21 @@ process	main(void)
 
 	/* Wait for shell to exit and recreate it */
 
+	nsaddr = 0x800a0c10;
+
+	netstart();
+
+
+	tcp_init();
+
 	while (TRUE) {
 		receive();
 		sleepms(200);
 		kprintf("\n\nMain process recreating shell\n\n");
 		resume(create(shell, 4096, 20, "shell", 1, CONSOLE));
 	}
+
+
 	return OK;
     
 }

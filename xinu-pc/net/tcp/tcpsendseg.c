@@ -25,6 +25,7 @@ void	tcpsendseg(
 	pkt = tcpalloc (tcbptr, len);
 
 	if ((int32)pkt == SYSERR) {
+		kprintf("Fallo el pkt\n");
 		return;
 	}
 

@@ -14,7 +14,9 @@ void	netstart (void)
 	/* Initialize the network stack */
 
 	kprintf("...initializing network stack\n");
+	kprintf("...ADRI ANTES\n");
 	net_init();
+	kprintf("...ADRI DESPUES\n");
 
 	/* Force system to use DHCP to obtain an address */
 

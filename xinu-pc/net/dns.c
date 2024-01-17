@@ -4,6 +4,8 @@
 #include <string.h>
 #include <dns.h>
 
+uint32	nsaddr;
+
 local	uint32	dns_bldq(char *, char *);
 local	uint32	dns_geta(char *, struct dnspkt *);
 local	uint32	dns_getrname(char *, char *, char *);
@@ -35,7 +37,7 @@ uint32	dnslookup (
 	/* Obtain the IP address of a DNS server */
 
 	retval = getlocalip();
-	nsaddr = NetData.dnsserver;
+	//nsaddr = NetData.dnsserver;
 	if ( (retval == SYSERR) || (NetData.dnsserver == 0) ) {
 			kprintf("Cannot find a DNS server\n");
 			return (uint32)SYSERR;

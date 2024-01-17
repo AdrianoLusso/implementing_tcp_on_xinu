@@ -59,12 +59,13 @@ void	net_init (void)
 	}
 
 	/* Create the IP output process */
-
+	kprintf("TODOBIEN");
+	//Adri - Estos procesos los comente yo para ver si solucionaba un error. Tal vez no son necesarios....
 	resume(create(ipout, NETSTK, NETPRIO, "ipout", 0, NULL));
 
 	/* Create a network input process */
 
-	resume(create(netin, NETSTK, NETPRIO, "netin", 0, NULL));
+	//resume(create(netin, NETSTK, NETPRIO, "netin", 0, NULL));
 }
 
 
@@ -89,9 +90,11 @@ process	netin ()
 		/* Obtain next packet that arrives */
 
 		retval = read(ETHER0, (char *)pkt, PACKLEN);
+			kprintf("...ADRI AVER\n");
 		if(retval == SYSERR) {
 			panic("Cannot read from Ethernet\n");
 		}
+	kprintf("...ADRI SE VIO\n");
 
 		/* Convert Ethernet Type to host order */
 
