@@ -1,6 +1,6 @@
-xinu-final es el xinu que estamos desarrollando para entregar, donde meti los archivos TCP del xinu mas viejito.
-xinu-tcp2 es el xinu viejito con tcp
-ignoren xinu-tcpnosirve y xinu-pc, NO SIRVEN
+xinu-final: Xinu que estamos programando y que vamos a entregar como trabajo final
+xinu-tcp2: xinu de la tesis que nos dio Marina.Es el que tiene el TCP.
+xinu-pc: NO SIRVE
 
 En notas.odt estan TODOS los archivos que tienen la palabra "TCP" escrita. Por si quieren chusmearlos.
 
