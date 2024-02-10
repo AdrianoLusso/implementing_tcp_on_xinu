@@ -122,6 +122,7 @@ status	ip_send(
 	/* Loop back to local stack if destination 127.0.0.0/8 */
 
 	if ((dest&0xff000000) == 0x7f000000) {
+		kprintf("El destino esta en 127.0.0.0/8\n");
 		ip_local(pktptr);
 		restore(mask);
 		return OK;
@@ -130,6 +131,7 @@ status	ip_send(
 	/* Loop back if the destination matches our IP unicast address	*/
 
 	if (dest == NetData.ipucast) {
+		kprintf("El destino es el local\n");
 		ip_local(pktptr);
 		restore(mask);
 		return OK;
@@ -158,11 +160,13 @@ status	ip_send(
 	} else {
 
 		/* Next hop is default router on the network */
+
 		nxthop = NetData.iprouter;
 
 	}
 
 	if (nxthop == 0) {	/* Dest. invalid or no default route	*/
+		kprintf("DEST INVALIDO");
 		freebuf((char *)pktptr);
 		return SYSERR;
 	}
@@ -171,6 +175,8 @@ status	ip_send(
 
 	retval = arp_resolve(nxthop, pktptr->net_ethdst);
 	if (retval != OK) {
+				kprintf("RETVAL OKN'T");
+
 		freebuf((char *)pktptr);
 		return SYSERR;
 	}
@@ -257,9 +263,11 @@ status	ip_out(
 			break;
 
 		case IP_TCP:
-	    		tcp_hton(pktptr);
+	    	tcp_hton(pktptr);
 			cksum = tcpcksum(pktptr);
 			pktptr->net_tcpcksum = htons(cksum) & 0xffff;
+			//https://gist.github.com/david-hoze/0c7021434796997a4ca42d7731a7073a
+			//pktptr->net_tcpcksum = 0x0998;
 			break;
 
 	    default:
@@ -281,7 +289,6 @@ status	ip_out(
 	eth_hton(pktptr);
 
 	/* Send packet over the Ethernet */
-
 	retval = write(ETHER0, (char*)pktptr, pktlen);
 	freebuf((char *)pktptr);
 

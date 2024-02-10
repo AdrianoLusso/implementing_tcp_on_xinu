@@ -43,13 +43,22 @@ int serverInit()
     }
 
     // Habilita el socket para aceptar conexiones, con una cola de espera de tamaño 2
-    listen(sockfd, 2);
+    listen(sockfd, 1);
     printf(" server listening\n");
+    
+    // Obtener la dirección IP y el puerto del servidor
+    char server_ip[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(serv_addr.sin_addr), server_ip, INET_ADDRSTRLEN);
+    int server_port = ntohs(serv_addr.sin_port);
+
+    printf("Server listening on IP: %s, Port: %d\n", server_ip, server_port);
     return sockfd;
 }
 
+/*
 int connectClient(int serverSocket)
 {
+    printf(" Inicio de  coonectCLient: %d\n",serverSocket);
     // conecta a una cliente al socket del servidor con el nro pasado por parametro
 
     int socketClient;
@@ -57,23 +66,58 @@ int connectClient(int serverSocket)
     struct sockaddr_in pla_addr;
     int pla_length = sizeof(pla_addr);
 
-    while ((socketClient = accept(serverSocket, (struct sockaddr *)&pla_addr, &pla_length)) < 0)
+    printf("antes del accept()\n");\
+    socketClient = accept(serverSocket, (struct sockaddr *)&pla_addr, &pla_length);
+        printf("despues del accept() %d\n",socketClient);
+    while (socketClient < 0){
+        printf("el socketclient es %d\n",socketClient);
         close(socketClient);
+        }
     printf(" conecte clientesito nro de socket %d\n", socketClient);
+    return socketClient;
+}
+*/
+
+int connectClient(int serverSocket)
+{
+    int socketClient;
+    struct sockaddr_in pla_addr;
+    int pla_length = sizeof(pla_addr);
+
+    printf("antes del accept()\n");
+
+    // Keep trying to accept a client until successful
+    while ((socketClient = accept(serverSocket, (struct sockaddr *)&pla_addr, &pla_length)) < 0) {
+        perror("Error in accept");
+        // You may want to add some sleep here to avoid busy-waiting
+    }
+
+    printf("despues del accept() %d\n", socketClient);
+    printf("conecte clientesito nro de socket %d\n", socketClient);
+    
     return socketClient;
 }
 
 
 void main()
 {
-    int clients[2];
+    int client;
+     printf(" Server going to init\n");
     int socketServer = serverInit();
-    int amountclients = 0;
-    while (amountclients < MAX_clientS)
-    {
-        clients[amountclients] = connectClient(socketServer);
-        amountclients++;
-    }
+    printf(" Server init finished: %d\n",socketServer);
 
+
+    printf("antes del connectCLient()\n");
+    client = connectClient(socketServer);
+
+    unsigned char msg[40];
+    read(client,&msg,sizeof(msg));
+    printf("Received message: %s \n",msg);
+    
+    strcpy(msg,"BIENVENIDOS AL HIMALAYAA,HELADO? :D");
+    write(client,&msg,sizeof(msg));
+    
+    printf("Server goinge to close...\n");
     close(socketServer);
+    printf("Server close!!!\n");
 }

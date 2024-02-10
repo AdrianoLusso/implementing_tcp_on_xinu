@@ -23,7 +23,6 @@ int32	tcpxmit(
 	/* Send as many segments as we can */
 
 	while (1) {
-		kprintf("Una iteracion del envio de segmentos\n");
 		/* Calculate offset and length for next segment */
 		offset = seq - tcbptr->tcb_suna;
 		len = tcbptr->tcb_sblen - offset;
@@ -62,6 +61,7 @@ int32	tcpxmit(
 		if (tcbptr->tcb_flags & TCBF_SPUSHOK
 				&& SEQ_CMP(seq, tcbptr->tcb_spush) < 0
 				&& SEQ_CMP(seq + len, tcbptr->tcb_spush) >= 0) {
+
 			len = min (len, tcbptr->tcb_spush - seq);
 			code |= TCPF_PSH;
 		}
@@ -80,13 +80,12 @@ int32	tcpxmit(
 
 		if ( ( (len + codelen) == 0 )
 				|| ( (pipe + len + codelen) > tcbptr->tcb_cwnd ) ) {
-			kprintf("Entro al if de nodata\n");
+
 			if (sent == 0) {
 				tcpack (tcbptr, FALSE);
 			}
 			return OK;
 		}
-		kprintf("Paso al if de nodata\n");
 
 		/* Send a segment */
 		tcpsendseg (tcbptr, offset, len, code);

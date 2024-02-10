@@ -61,14 +61,26 @@ uint16	tcpcksum(
 	/*   adding a zero byte if the length is odd	*/
 
 	len = pkt->net_iplen - IP_HLEN(pkt);
+	kprintf("-------------------------------\n");
+	kprintf("................................\n");
+	kprintf("EMPIEZA EL CKSUM\n");
+	kprintf("-------------------------------\n");
+	kprintf("1. Obtiene los datos del ip pseudoheader\n");
+	kprintf("len of tcp segment: %x,%d\n",len,len);
 
 	/* Form a pseudo header */
 
-	pseudo.ipsrc   = htonl(pkt->net_ipsrc);
-	pseudo.ipdst   = htonl(pkt->net_ipdst);
+	pseudo.ipsrc   = pkt->net_ipsrc;
+	kprintf("pseudo.ipsrc: %x\n",pseudo.ipsrc,pseudo.ipsrc);
+	pseudo.ipdst   = pkt->net_ipdst;
+	kprintf("pseudo.ipdst: %x\n",pseudo.ipdst,pseudo.ipdst);
 	pseudo.zero    = 0;
+	kprintf("pseudo.zero: %x\n",pseudo.zero,pseudo.zero);
 	pseudo.ipproto = pkt->net_ipproto;
-	pseudo.tcplen  = htons(len);
+	kprintf("pseudo.ipproto: %x\n",pseudo.ipproto,pseudo.ipproto);
+	pseudo.tcplen  = len;
+	kprintf("pseudo.tcplen: %x,%d\n",pseudo.tcplen,pseudo.tcplen);
+
 
 	/* Adjust the length to an even number for the computation */
 
@@ -76,18 +88,44 @@ uint16	tcpcksum(
 		*( ((char *)&pkt->net_tcpsport) + len ) = NULLCH;
 		len++;
 	}
-
+	kprintf("len of tcp after adjust: %x,%d\n",len,len);
 	/* Start the checksum at zero */
 
 	sum = 0;
+	kprintf("-------------------------------\n");
+	kprintf("2. Suma los datos del ip pseudoheader\n");
+	kprintf("segunda parte del ipsrc: %x \n",(pseudo.ipsrc & 0xFFFF));
+	sum += (pseudo.ipsrc & 0xFFFF);
 
+	kprintf("primera parte del ipsrc: %x \n",((pseudo.ipsrc >> 16) & 0xFFFF));
+	sum += ((pseudo.ipsrc >> 16) & 0xFFFF);
+
+	kprintf("segunda parte del ipdst: %x \n",(pseudo.ipdst & 0xFFFF));
+	sum += (pseudo.ipdst & 0xFFFF);
+
+	kprintf("primera parte del ipdst: %x \n",((pseudo.ipdst >> 16) & 0xFFFF));
+	sum += ((pseudo.ipdst >> 16) & 0xFFFF);
+
+	kprintf("iprotocol: %x \n",pseudo.ipproto);
+	sum += pseudo.ipproto;
+
+	kprintf("tcplen: %x \n",pseudo.tcplen);
+	sum += pseudo.tcplen,
+
+	kprintf("pseudoheader sum: %x\n",sum);
+	kprintf("-------------------------------\n");
+	kprintf("................................\n");
 	/* Add in the "pseudo header" values */
 
+	/*
 	ptr = (uint16 *)&pseudo;
 	for (i = 0; i < 6; i++) {
-		sum += htons(*ptr);
+		kprintf(" ITERACION %d PARA SUMAR PSEUDO HEADER: %x, %d\n",i,*ptr,*ptr);
+		//sum += *ptr;
+		sum += *ptr;
 		ptr++;
 	}
+	*/
 
 	/* Compute the checksum over the TCP segment */
 

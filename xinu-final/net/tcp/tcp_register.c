@@ -64,7 +64,6 @@ int32	tcp_register (
 	/* Obtain exclusive use, find free TCB, and clear it */
 
 	wait (Tcp.tcpmutex);
-	kprintf("Paso 1\n");
 	for (i = 0; i < Ntcp; i++) {
 		if (tcbtab[i].tcb_state == TCB_FREE)
 			break;
@@ -75,7 +74,6 @@ int32	tcp_register (
 	}
 	tcbptr = &tcbtab[i];
 	tcbclear (tcbptr);
-	kprintf("Paso 2\n");
 	slot = i;
 
 	/* Either set up active or passive endpoint */
@@ -85,7 +83,6 @@ int32	tcp_register (
 		/* Obtain local IP address from interface */
 
 		lip = NetData.ipucast;
-		kprintf("local ip: %u.%u.%u.%u\n",((lip >> 24) & 0xFF),((lip >> 16) & 0xFF),((lip >> 8) & 0xFF),((lip) & 0xFF));
 
 		/* Allocate receive buffer and initialize ptrs */
 
@@ -104,7 +101,6 @@ int32	tcp_register (
 			return SYSERR;
 		}
 		tcbptr->tcb_sbsize = 65535;
-	kprintf("Paso 3\n");
 
 		/* The following will always succeed because	*/
 		/*   the iteration covers at least Ntcp+1 port	*/
@@ -144,12 +140,10 @@ int32	tcp_register (
 			tcbptr->tcb_readers++;
 			signal (tcbptr->tcb_mutex);
 			wait (tcbptr->tcb_rblock);
-								kprintf("Paso wait 1\n");
 			wait (tcbptr->tcb_mutex);
-								kprintf("Paso wait 2\n");
+			kprintf("PASO BIEN DE ACA\n");
 
 		}
-		kprintf("Paso 4\n");
 
 		if ((state = tcbptr->tcb_state) == TCB_CLOSED) {
 			tcbunref (tcbptr);
