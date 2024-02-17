@@ -7,8 +7,8 @@
 /* Table of Xinu shell commands and the function associated with each	*/
 /************************************************************************/
 const	struct	cmdent	cmdtab[] = {
-	{"xsh_tcpserver",	TRUE,	xsh_tcpserver},
-	{"xsh_tcpclient",	TRUE,	xsh_tcpclient},
+	{"server",	TRUE,	xsh_tcpserver},
+	{"client",	TRUE,	xsh_tcpclient},
 	{"argecho",	TRUE,	xsh_argecho},
 	{"arp",		FALSE,	xsh_arp},
 	{"cat",		FALSE,	xsh_cat},
