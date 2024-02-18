@@ -1,4 +1,3 @@
-/*  tcpclient.c  - a tcp client for XINU */
 
 #include <xinu.h>
 #include <stdlib.h>
@@ -9,57 +8,58 @@
 
 shellcmd xsh_tcpclient(int nargs, char *args[])
 {
-	int32 res, i, len;
-	int32 sock;
-	int32 ipaddr;
-	int port;
-	unsigned char msg[80];
+    int32 res, len;
+    int32 sock;
+    int32 ipaddr;
+    int port;
+    unsigned char msg[512];
+
+    if (nargs < 4) {
+        printf("Uso: %s URL PUERTO\n", args[0]);
+        return 1;
+    }
+
+    char *url = args[1];
+    printf("La URL es: %s\n", url);
+    ipaddr = dnslookup(url);
+    port = atoi(args[2]);
+
+    printf("Conectando al servidor...\n");
+
+    // Conexión TCP
+    sock = tcp_register(ipaddr, port, 1);
+    if (sock == SYSERR) {
+        printf("Fallo\n");
+        return 1;
+    }
+    printf("¡Conexión lista!\n");
 
 
-	char * url =args[1]; 
-	printf("La URL es: %s\n", url);
-	ipaddr= dnslookup (url); 
-	port = atoi(args[2]);
+    strcpy(msg, "GET ");
+    strcat(msg, args[3]);
+    strcat(msg, " HTTP/1.0\r\nHost: ");
+    strcat(msg, url);
+    strcat(msg, "\r\n\r\n");
+    len = strlen(msg); 
 
-	printf("connecting to server... \n");
+    printf("Mensaje enviado al servidor:\n%s\n", msg);
 
-	/* tcp connection */
-	sock = tcp_register(ipaddr, port, 1);
-	if (sock == SYSERR) {
-		printf("fail \n");
-		return;
-	}
-	printf("Connection ready!... \n");
+    // Envío del mensaje
+    tcp_send(sock, msg, len);
 
-
-	strcpy(msg, "GET /philosophy/free-sw.html HTTP/1.0\r\nHost: www.gnu.msn.by\r\n\r\n");
-	len = strlen(msg) + 1;	/* plus one is for end of string char */
-
-	printf("El mensaje es: %s\n", msg);
-	printf("La longitud del mensaje es: %d\n", len);
-
-
-
-	printf("sending message to server... \n");
-
-	/* send msg */
-	tcp_send(sock, msg, len);
-
-	printf("mensaje mandadisimo");
-
-	/*wait answer */
-	// Bucle para recibir datos hasta que tcp_recv() retorne 0
+    // Bucle para recibir datos hasta que tcp_recv() retorne 0
     while (1) {
-        int32 bytesRead = tcp_recv(sock, msg,sizeof(msg));
+        int32 bytesRead = tcp_recv(sock, msg, sizeof(msg));
 
         if (bytesRead == 0) {
-            // No hay más datos para recibir, sale del bucle
+            // No hay más datos para recibir, salir del bucle
             break;
         } else if (bytesRead == SYSERR) {
             // Manejar error de recepción
-            printf("Error receiving data from server\n");
+            printf("Error al recibir datos del servidor\n");
             break;
         } else {
+            // Procesar los datos recibidos
             eliminarEtiquetasYmostrar(msg, bytesRead);
         }
     }
@@ -71,7 +71,7 @@ shellcmd xsh_tcpclient(int nargs, char *args[])
 
 }
 // Función para eliminar los tag y mostrar por pantalla
-void eliminarEtiquetasYmostrar(unsigned char *data, int32 length)
+void eliminarEtiquetasYmostrar(unsigned char *data, int32 length){
     for (int i = 0; i < length; i++) {
         // Sacar etiquetas HTML
         if (data[i] == '<') {
